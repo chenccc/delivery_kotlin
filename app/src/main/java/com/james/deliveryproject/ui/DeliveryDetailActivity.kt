@@ -1,4 +1,4 @@
-package com.james.deliveryproject.delivery_list
+package com.james.deliveryproject.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,11 +7,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DeliveryListActivity : AppCompatActivity() {
-    @Inject lateinit var viewModel: DeliveryListViewModel
-    
+class DeliveryDetailActivity : AppCompatActivity() {
+    @Inject lateinit var viewModel: DeliveryDetailViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_delivery_detail)
     }
 }
