@@ -1,4 +1,4 @@
-package com.james.deliveryproject.ui
+package com.james.deliveryproject.ui.deliverydetail
 
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject

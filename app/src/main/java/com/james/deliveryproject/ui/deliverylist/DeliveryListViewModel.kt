@@ -1,4 +1,4 @@
-package com.james.deliveryproject.ui
+package com.james.deliveryproject.ui.deliverylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -12,8 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.james.deliveryproject.ui.DeliveryDetailActivity"></activity>
-        <activity android:name="com.james.deliveryproject.ui.DeliveryListActivity">
+        <activity android:name="com.james.deliveryproject.ui.deliverydetail.DeliveryDetailActivity"></activity>
+        <activity android:name="com.james.deliveryproject.ui.deliverylist.DeliveryListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

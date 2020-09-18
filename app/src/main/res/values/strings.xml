@@ -5,4 +5,5 @@
     <string name="delivery_icon">The icon of delivery</string>
     <string name="fav_icon">The icon of favourite delivery</string>
     <string name="my_deliveries">My Deliveries</string>
+    <string name="time_out">Request time out</string>
 </resources>

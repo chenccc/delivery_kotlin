@@ -29,6 +29,10 @@ android {
         dataBinding true
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
