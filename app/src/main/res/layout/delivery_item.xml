@@ -60,5 +60,5 @@
             android:layout_height="30dp"
             app:layout_constraintEnd_toEndOf="@+id/price_text"
             app:layout_constraintTop_toTopOf="@+id/from_text"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:src="@mipmap/fav" />
     </androidx.constraintlayout.widget.ConstraintLayout>
