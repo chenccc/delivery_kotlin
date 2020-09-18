@@ -23,21 +23,33 @@ class DeliveryRemoteMediator @Inject constructor(
 ): RemoteMediator<Int, Delivery>(){
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Delivery>): RemoteKeys? {
-        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let {
-            database.remoteKeysDao().remoteById(it.id)
-        }
+        // Get the last page that was retrieved, that contained items.
+        // From that last page, get the last item
+        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
+            ?.let { delivery ->
+                // Get the remote keys of the last item retrieved
+                database.remoteKeysDao().remoteById(delivery.id)
+            }
     }
 
     private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Delivery>): RemoteKeys? {
-        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let {
-            database.remoteKeysDao().remoteById(it.id)
-        }
+        // Get the first page that was retrieved, that contained items.
+        // From that first page, get the first item
+        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
+            ?.let { delivery ->
+                // Get the remote keys of the first items retrieved
+                database.remoteKeysDao().remoteById(delivery.id)
+            }
     }
 
-    private suspend fun getRemoteKeyForClosetItem(state: PagingState<Int, Delivery>): RemoteKeys? {
+    private suspend fun getRemoteKeyClosestToCurrentPosition(
+        state: PagingState<Int, Delivery>
+    ): RemoteKeys? {
+        // The paging library is trying to load data after the anchor position
+        // Get the item closest to the anchor position
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.let {
-                database.remoteKeysDao().remoteById(it.id)
+            state.closestItemToPosition(position)?.id?.let { deliveryId ->
+                database.remoteKeysDao().remoteById(deliveryId)
             }
         }
     }
@@ -45,31 +57,34 @@ class DeliveryRemoteMediator @Inject constructor(
         loadType: LoadType,
         state: PagingState<Int, Delivery>
     ): MediatorResult {
-        val page = when(loadType) {
+        val page = when (loadType) {
             LoadType.REFRESH -> {
-                val remoteKeys = getRemoteKeyForClosetItem(state)
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(1) ?: START_INDEX
-            }
-            LoadType.APPEND -> {
-                val remoteKeys = getRemoteKeyForLastItem(state)
-                if (remoteKeys?.nextKey == null) {
-                    throw InvalidObjectException("The remote key should not be null $loadType")
-                }
-
-                remoteKeys.nextKey
             }
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 if (remoteKeys == null) {
-                    throw InvalidObjectException("Remote key and the prevKey should not be null")
+                    // The LoadType is PREPEND so some data was loaded before,
+                    // so we should have been able to get remote keys
+                    // If the remoteKeys are null, then we're an invalid state and we have a bug
+                    return MediatorResult.Error(InvalidObjectException("Remote key and the prevKey should not be null"))
                 }
-
-                if (remoteKeys.preKey == null) {
-                    return MediatorResult.Success(endOfPaginationReached = false)
+                // If the previous key is null, then we can't request more data
+                val prevKey = remoteKeys.preKey
+                if (prevKey == null) {
+                    return MediatorResult.Success(endOfPaginationReached = true)
                 }
-
                 remoteKeys.preKey
             }
+            LoadType.APPEND -> {
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                if (remoteKeys == null || remoteKeys.nextKey == null) {
+                    return MediatorResult.Error( InvalidObjectException("Remote key should not be null for $loadType"))
+                }
+                remoteKeys.nextKey
+            }
+
         }
 
         try {

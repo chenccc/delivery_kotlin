@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">DeliveryProject</string>
     <string name="my_delivery">My Deliveries</string>
+    <string name="retry">retry</string>
+    <string name="delivery_icon">The icon of delivery</string>
+    <string name="fav_icon">The icon of favourite delivery</string>
+    <string name="my_deliveries">My Deliveries</string>
 </resources>
